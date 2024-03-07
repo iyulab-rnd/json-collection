@@ -168,7 +168,11 @@ function aggregateItem(aggregationResult: any, item: any, group: any): void {
             aggregationResult[field] += opValue;
             break;
           case "$avg":
-            // $avg 연산 처리를 여기에 추가...
+            if (!aggregationResult[field]) {
+              aggregationResult[field] = { sum: 0, count: 0 }; // 초기화
+            }
+            aggregationResult[field].sum += opValue;
+            aggregationResult[field].count += 1;
             break;
           case "$min":
             if (
@@ -214,8 +218,13 @@ function finalizeAggregationResult(aggregationResult: any, group: any): void {
     if (field !== "_id" && aggregationResult[field]) {
       if (group[field].$avg) {
         // $avg 최종 계산
-        aggregationResult[field] =
-          aggregationResult[field].sum / aggregationResult[field].count;
+        if (aggregationResult[field].count > 0) {
+          // 분모가 0이 아닐 때만 계산
+          aggregationResult[field] =
+            aggregationResult[field].sum / aggregationResult[field].count;
+        } else {
+          aggregationResult[field] = null; // 항목이 없는 경우 결과를 null로 설정
+        }
       } else if (group[field].$median) {
         // $median 최종 계산
         if (Array.isArray(aggregationResult[field])) {

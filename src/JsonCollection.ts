@@ -30,7 +30,7 @@ class JsonCollection {
   }
 
   // aggregate 메서드는 AggregateOptions 타입의 옵션을 받아서 결과 배열을 반환합니다.
-  aggregate(options: AggregateOptions): any[] {
+  aggregate(options: AggregateOptions[] | AggregateOptions): any[] {
     // 'aggregate' 함수를 사용하여 데이터 집계
     return aggregate(this.data, options);
   }

@@ -11,31 +11,51 @@ import {
 export interface AggregateOptions {
   $match?: any;
   $group?: { [key: string]: any };
-  $sort?: { [key: string]: 1 | -1 };
+  $sort?: { [key: string]: 1 | -1 } | { [key: number]: 1 | -1 };
   $limit?: number;
 }
 
 // MongoDB 집계를 실행하는 함수
-export function aggregate(data: any[], options: AggregateOptions): any[] {
+export function aggregate(
+  data: any[],
+  options: AggregateOptions[] | AggregateOptions
+): any[] {
   let result = data;
 
-  if (options.$match) {
-    result = result.filter((item) => matchFilter(item, options.$match));
-  }
-
-  if (options.$group) {
-    const resultsMap = initializeAggregationResults(options.$group);
-    performAggregation(result, options.$group, resultsMap);
-    result = finalizeAggregationResults(resultsMap, options.$group);
-  }
-
-  if (options.$sort) {
-    result = result.sort((a, b) => compare(a, b, options.$sort));
-  }
-
-  if (options.$limit) {
-    result = result.slice(0, options.$limit);
+  if (Array.isArray(options)) {
+    options.forEach((option) => {
+      result = applyOption(result, option);
+    });
+  } else {
+    result = applyOption(result, options);
   }
 
   return result;
+}
+
+// 단일 옵션을 적용하는 함수
+function applyOption(data: any[], option: AggregateOptions): any[] {
+  // $match 옵션 처리
+  if (option.$match) {
+    data = data.filter((item) => matchFilter(item, option.$match));
+  }
+
+  // $group 옵션 처리
+  if (option.$group) {
+    const resultsMap = initializeAggregationResults(option.$group);
+    performAggregation(data, option.$group, resultsMap);
+    data = finalizeAggregationResults(resultsMap, option.$group);
+  }
+
+  // $sort 옵션 처리
+  if (option.$sort) {
+    data = data.sort((a, b) => compare(a, b, option.$sort));
+  }
+
+  // $limit 옵션 처리
+  if (option.$limit) {
+    data = data.slice(0, option.$limit);
+  }
+
+  return data;
 }
