@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "module": "ESNext",
+    "target": "es6",
+    "lib": ["es2017", "dom"],
+    "sourceMap": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "declaration": true,
+    "types": ["jest"],
+  },
+  "include": [
+    "src/**/*",
+    "tests/**/*"
+, "test/Summerizer.test.ts"  ],
+  "exclude": ["node_modules", "dist"]
+}
