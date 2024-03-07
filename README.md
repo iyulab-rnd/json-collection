@@ -28,8 +28,7 @@ Below is a simple example demonstrating how to use the Json Collection library t
 
 ```typescript
 import {
-  aggregate,
-  find,
+  JsonCollection,
   AggregationOptions,
   FindOptions,
 } from "@iyulab/json-collection";
@@ -50,7 +49,8 @@ const aggOptions: AggregationOptions = {
   $limit: 2, // Limiting to 2 documents
 };
 
-const aggResult = aggregate(data, aggOptions);
+const collection = new JsonCollection(data);
+const aggResult = collection.aggregate(aggOptions);
 console.log(aggResult);
 
 // Find example
@@ -60,7 +60,7 @@ const findOptions: FindOptions = {
   $limit: 1, // Limiting to 1 document
 };
 
-const findResult = find(data, findOptions);
+const findResult = collection.find(findOptions).toArray();
 console.log(findResult);
 ```
 

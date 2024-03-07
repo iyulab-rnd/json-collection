@@ -1,7 +1,6 @@
 // Find.test.ts
-import { find, FindOptions } from "../src";
+import { JsonCollection, FindOptions, SortOption } from "../src";
 
-// 테스트할 데이터 배열
 const testData = [
   { _id: 1, name: "John", age: 30 },
   { _id: 2, name: "Alice", age: 25 },
@@ -10,50 +9,35 @@ const testData = [
 
 describe("find", () => {
   it("should return all documents if no options are provided", () => {
-    const result = find(testData, {});
+    const collection = new JsonCollection(testData);
+    const result = collection.find().toArray();
     expect(result).toEqual(testData);
   });
 
-  it("should filter documents based on $match option", () => {
-    const options: FindOptions = { $match: { age: { $gte: 30 } } };
+  it("should filter documents based on options", () => {
+    const options: FindOptions = { age: { $gte: 30 } };
     const expectedResult = [
       { _id: 1, name: "John", age: 30 },
       { _id: 3, name: "Bob", age: 35 },
     ];
-    const result = find(testData, options);
+    const collection = new JsonCollection(testData);
+    const result = collection.find(options).toArray();
     expect(result).toEqual(expectedResult);
   });
 
-  it("should sort documents based on $sort option", () => {
-    const options: FindOptions = { $sort: { age: 1 } };
+  it("should sort and limit documents based on options", () => {
+    const sortOptions: SortOption = { age: 1 }; // 나이에 따라 오름차순으로 정렬
+    const limitNumber = 2; // 결과를 2개로 제한
     const expectedResult = [
       { _id: 2, name: "Alice", age: 25 },
       { _id: 1, name: "John", age: 30 },
-      { _id: 3, name: "Bob", age: 35 },
     ];
-    const result = find(testData, options);
-    expect(result).toEqual(expectedResult);
-  });
-
-  it("should limit the number of documents based on $limit option", () => {
-    const options: FindOptions = { $limit: 2 };
-    const expectedResult = [
-      { _id: 1, name: "John", age: 30 },
-      { _id: 2, name: "Alice", age: 25 },
-    ];
-    const result = find(testData, options);
-    expect(result).toEqual(expectedResult);
-  });
-
-  it("should handle multiple options together", () => {
-    const options: FindOptions = {
-      $match: { age: { $gte: 30 } },
-      $sort: { age: -1 },
-      $limit: 1,
-    };
-
-    const expectedResult = [{ _id: 3, name: "Bob", age: 35 }];
-    const result = find(testData, options);
+    const collection = new JsonCollection(testData);
+    const result = collection
+      .find()
+      .sort(sortOptions)
+      .limit(limitNumber)
+      .toArray();
     expect(result).toEqual(expectedResult);
   });
 });

@@ -1,6 +1,6 @@
 // Aggregation.test.ts
 
-import { AggregateOptions, aggregate } from "../src";
+import { AggregateOptions, JsonCollection } from "../src";
 
 describe("Aggregation", () => {
   const data = [
@@ -12,7 +12,8 @@ describe("Aggregation", () => {
 
   it("should filter data based on $match option", () => {
     const options: AggregateOptions = { $match: { age: { $gt: 30 } } };
-    const filteredData = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const filteredData = collection.aggregate(options);
     expect(filteredData).toEqual([
       { id: 3, name: "Charlie", age: 35 },
       { id: 4, name: "David", age: 40 },
@@ -23,7 +24,8 @@ describe("Aggregation", () => {
     const options: AggregateOptions = {
       $group: { _id: "$age", count: { $sum: 1 } },
     };
-    const groupedData = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const groupedData = collection.aggregate(options);
     const sortedGroupedData = groupedData.sort((a, b) => a._id - b._id);
 
     expect(sortedGroupedData).toEqual([
@@ -36,7 +38,8 @@ describe("Aggregation", () => {
 
   it("should sort data based on $sort option", () => {
     const options: AggregateOptions = { $sort: { age: 1 } };
-    const sortedData = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const sortedData = collection.aggregate(options);
 
     expect(sortedData).toEqual([
       { id: 2, name: "Bob", age: 25 },
@@ -48,7 +51,8 @@ describe("Aggregation", () => {
 
   it("should limit data based on $limit option", () => {
     const options: AggregateOptions = { $limit: 2 };
-    const limitedData = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const limitedData = collection.aggregate(options);
 
     expect(limitedData.length).toBe(2);
   });
@@ -57,7 +61,8 @@ describe("Aggregation", () => {
     const options: AggregateOptions = {
       $group: { _id: null, totalAge: { $sum: "$age" } },
     };
-    const aggregatedData = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const aggregatedData = collection.aggregate(options);
 
     expect(aggregatedData).toEqual([{ _id: null, totalAge: 130 }]);
   });
@@ -66,7 +71,8 @@ describe("Aggregation", () => {
     const options: AggregateOptions = {
       $group: { _id: null, minAge: { $min: "$age" } },
     };
-    const aggregatedData = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const aggregatedData = collection.aggregate(options);
     expect(aggregatedData).toEqual([{ _id: null, minAge: 25 }]);
   });
 
@@ -74,7 +80,8 @@ describe("Aggregation", () => {
     const options: AggregateOptions = {
       $group: { _id: null, maxAge: { $max: "$age" } },
     };
-    const aggregatedData = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const aggregatedData = collection.aggregate(options);
 
     expect(aggregatedData).toEqual([{ _id: null, maxAge: 40 }]);
   });
@@ -83,7 +90,8 @@ describe("Aggregation", () => {
     const options: AggregateOptions = {
       $group: { _id: null, medianAge: { $median: "$age" } },
     };
-    const aggregatedData = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const aggregatedData = collection.aggregate(options);
 
     expect(aggregatedData).toEqual([{ _id: null, medianAge: 32.5 }]);
   });
@@ -92,7 +100,8 @@ describe("Aggregation", () => {
     const options: AggregateOptions = {
       $group: { _id: null, stdDevPopAge: { $stdDevPop: "$age" } },
     };
-    const aggregatedData = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const aggregatedData = collection.aggregate(options);
 
     expect(aggregatedData).toEqual([
       { _id: null, stdDevPopAge: 5.5901699437494745 },
@@ -103,7 +112,8 @@ describe("Aggregation", () => {
     const options: AggregateOptions = {
       $group: { _id: null, stdDevSampAge: { $stdDevSamp: "$age" } },
     };
-    const aggregatedData = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const aggregatedData = collection.aggregate(options);
 
     expect(aggregatedData).toEqual([
       { _id: null, stdDevSampAge: 6.454972243679028 },
@@ -127,7 +137,8 @@ describe("Complex Aggregation", () => {
       $limit: 2,
     };
 
-    const result = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const result = collection.aggregate(options);
 
     expect(result).toEqual([
       { _id: 35, count: 1 },
@@ -150,7 +161,8 @@ describe("Complex Aggregation with Min and Max", () => {
       $group: { _id: null, minAge: { $min: "$age" }, maxAge: { $max: "$age" } },
     };
 
-    const result = aggregate(data, options);
+    const collection = new JsonCollection(data);
+    const result = collection.aggregate(options);
 
     expect(result).toEqual([{ _id: null, minAge: 35, maxAge: 40 }]);
   });

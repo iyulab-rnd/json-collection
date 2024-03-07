@@ -1,6 +1,6 @@
 {
   "name": "@iyulab/json-collection",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A json collection pipeline library that mimics the MongoDB pipeline syntax.",
   "author": {
     "name": "iyulab",
